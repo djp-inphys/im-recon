@@ -1,0 +1,418 @@
+2025-09-22 12:33:58,034 - __main__ - INFO - Starting application
+2025-09-22 12:33:58,035 - __main__ - INFO - Starting model processing main function
+2025-09-22 12:33:58,035 - __main__ - INFO - Input files: index=GammaIndex.csv, gamma=gamma.dat
+2025-09-22 12:33:58,036 - __main__ - INFO - Initializing observation data...
+2025-09-22 12:34:22,469 - data - INFO - Initializing obsData with index_fname: GammaIndex.csv, gamma_fname: gamma.dat
+2025-09-22 12:34:26,963 - data - INFO - Configuration: n_bins=600, n_channels=64, stride=1
+2025-09-22 12:34:28,156 - data - INFO - Image dimensions: n_rows=15, n_cols=15, n_spline_size=70
+2025-09-22 12:34:54,109 - data - INFO - Phase sequence: [0, 6]
+2025-09-22 12:34:55,238 - data - INFO - Number of phases: 2
+2025-09-22 12:34:56,358 - data - INFO - Loading gamma index from file: GammaIndex.csv
+2025-09-22 12:34:56,415 - data - INFO - Successfully loaded gamma index with shape: (360, 5)
+2025-09-22 12:34:57,738 - data - INFO - Successfully loaded gamma index file: GammaIndex.csv
+2025-09-22 12:35:08,177 - data - INFO - Reading gamma observation data...
+2025-09-22 12:35:08,784 - data - INFO - Reading gamma observations from gamma.dat with stride 1
+2025-09-22 12:35:08,785 - data - INFO - Processing 360 gamma index entries
+2025-09-22 12:35:11,618 - data - WARNING - Observation size mismatch: expected 38400, got 76800
+2025-09-22 12:35:11,618 - data - INFO - Processed 360 entries from gamma file
+2025-09-22 12:35:11,618 - data - INFO - Creating DataFrame from processed observation data
+2025-09-22 12:35:11,642 - data - INFO - Successfully created observation DataFrame with shape: (22976, 603)
+2025-09-22 12:35:11,643 - data - INFO - Unique phases in data: [0, 1, 2, 3, 4, 5, 6]
+2025-09-22 12:38:32,552 - __main__ - INFO - Starting application
+2025-09-22 12:38:32,554 - __main__ - INFO - Starting model processing main function
+2025-09-22 12:38:32,554 - __main__ - INFO - Input files: index=GammaIndex.csv, gamma=gamma.dat
+2025-09-22 12:38:32,554 - __main__ - INFO - Initializing observation data...
+2025-09-22 12:38:42,409 - data - INFO - Initializing obsData with index_fname: GammaIndex.csv, gamma_fname: gamma.dat
+2025-09-22 12:38:43,039 - data - INFO - Configuration: n_bins=600, n_channels=64, stride=1
+2025-09-22 12:38:43,646 - data - INFO - Phase sequence: [0, 6]
+2025-09-22 12:38:45,311 - data - INFO - Number of phases: 2
+2025-09-22 12:38:46,483 - data - INFO - Loading gamma index from file: GammaIndex.csv
+2025-09-22 12:38:46,521 - data - INFO - Successfully loaded gamma index with shape: (360, 5)
+2025-09-22 12:38:48,843 - data - INFO - Successfully loaded gamma index file: GammaIndex.csv
+2025-09-22 12:38:53,149 - data - INFO - Reading gamma observation data...
+2025-09-22 12:38:56,547 - data - INFO - Reading gamma observations from gamma.dat with stride 1
+2025-09-22 12:38:56,548 - data - INFO - Processing 360 gamma index entries
+2025-09-22 12:39:00,405 - data - WARNING - Observation size mismatch: expected 38400, got 76800
+2025-09-22 12:39:00,405 - data - INFO - Processed 360 entries from gamma file
+2025-09-22 12:39:00,405 - data - INFO - Creating DataFrame from processed observation data
+2025-09-22 12:39:00,508 - data - INFO - Successfully created observation DataFrame with shape: (22976, 603)
+2025-09-22 12:39:00,508 - data - INFO - Unique phases in data: [0, 1, 2, 3, 4, 5, 6]
+2025-09-22 12:39:11,285 - data - INFO - Successfully loaded observation data with shape: (22976, 603)
+2025-09-22 12:39:18,445 - data - INFO - Resetting phase counts array to shape: (2, 64, 600)
+2025-09-22 12:39:20,524 - data - INFO - obsData initialization completed
+2025-09-22 12:39:22,332 - __main__ - INFO - Initializing model...
+2025-09-22 12:39:30,462 - model - INFO - Initializing Model class
+2025-09-22 12:39:31,454 - model - INFO - Model files: e2adc=e2adcLookup.csv, model=model.csv
+2025-09-22 12:39:35,886 - model - INFO - Reading e2adc lookup data...
+2025-09-22 12:39:58,185 - model - INFO - Reading e2adc lookup table from e2adcLookup.csv
+2025-09-22 12:40:31,246 - model - INFO - e2adc shape (96000, 4)
+2025-09-22 12:44:38,143 - model - INFO - e2adc dimensions: max_channel=64, max_energy=1500
+2025-09-22 12:45:16,439 - model - INFO - Populating e2adc 3D lookup table...
+2025-09-22 12:45:18,891 - model - INFO - Successfully processed 96000 e2adc entries
+2025-09-22 12:45:18,918 - model - INFO - e2adc 3D array shape: (64, 1500, 2)
+2025-09-22 12:45:34,928 - model - INFO - Setting up Hamamatsu channel map...
+2025-09-22 12:46:52,849 - model - INFO - Reading model data from model.csv...
+2025-09-22 12:47:22,553 - __main__ - ERROR - Application failed with error: [Errno 2] No such file or directory: 'model.csv'
+Traceback (most recent call last):
+  File "D:\model\main.py", line 151, in <module>
+    model_main()
+  File "D:\model\main.py", line 62, in model_main
+    model = Model(data)
+            ^^^^^^^^^^^
+  File "D:\model\model.py", line 192, in __init__
+    self.s_models = self.read_model_from_csv(self.model_fname)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\model\model.py", line 54, in read_model_from_csv
+    with open(file_path, 'r') as file:
+         ^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'model.csv'
+2025-09-22 12:47:22,557 - __main__ - INFO - Application finished
+2026-02-18 16:57:27,229 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 16:57:27,259 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 16:57:27,278 - __main__ - INFO - Processed instance 0/360
+2026-02-18 16:57:27,778 - __main__ - INFO - Processed instance 100/360
+2026-02-18 16:57:28,230 - __main__ - INFO - Processed instance 200/360
+2026-02-18 16:57:28,700 - __main__ - INFO - Processed instance 300/360
+2026-02-18 16:57:28,979 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 16:57:28,981 - __main__ - INFO - Processed instance 0/360
+2026-02-18 16:57:29,425 - __main__ - INFO - Processed instance 100/360
+2026-02-18 16:57:30,510 - __main__ - INFO - Processed instance 200/360
+2026-02-18 16:57:31,274 - __main__ - INFO - Processed instance 300/360
+2026-02-18 16:57:31,722 - __main__ - INFO - Pipeline completed
+2026-02-18 16:58:03,247 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 16:58:03,276 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 16:58:03,331 - __main__ - INFO - Processed instance 0/360
+2026-02-18 16:58:03,553 - __main__ - INFO - Processed instance 100/360
+2026-02-18 16:58:03,758 - __main__ - INFO - Processed instance 200/360
+2026-02-18 16:58:03,956 - __main__ - INFO - Processed instance 300/360
+2026-02-18 16:58:04,090 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 16:58:04,091 - __main__ - INFO - Processed instance 0/360
+2026-02-18 16:58:04,279 - __main__ - INFO - Processed instance 100/360
+2026-02-18 16:58:04,497 - __main__ - INFO - Processed instance 200/360
+2026-02-18 16:58:04,712 - __main__ - INFO - Processed instance 300/360
+2026-02-18 16:58:04,865 - __main__ - INFO - Pipeline completed
+2026-02-18 17:28:56,592 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 17:29:07,153 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 17:29:38,598 - __main__ - INFO - Processed instance 0/360
+2026-02-18 17:29:39,475 - __main__ - INFO - Processed instance 100/360
+2026-02-18 17:29:40,531 - __main__ - INFO - Processed instance 200/360
+2026-02-18 17:29:41,337 - __main__ - INFO - Processed instance 300/360
+2026-02-18 17:29:41,840 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 17:29:41,845 - __main__ - INFO - Processed instance 0/360
+2026-02-18 17:29:42,777 - __main__ - INFO - Processed instance 100/360
+2026-02-18 17:29:43,683 - __main__ - INFO - Processed instance 200/360
+2026-02-18 17:29:44,182 - __main__ - INFO - Processed instance 300/360
+2026-02-18 17:29:48,876 - __main__ - INFO - Reconstruction complete using strategy 'mask-antimask'.
+2026-02-18 17:30:01,917 - __main__ - INFO - Saved reconstruction raw image to reconstruction_mask-antimask_raw.png
+2026-02-18 17:30:03,877 - __main__ - INFO - Saved reconstruction normalised image to reconstruction_mask-antimask_normalised.png
+2026-02-18 17:30:06,934 - __main__ - INFO - Saved reconstruction abs image to reconstruction_mask-antimask_abs.png
+2026-02-18 17:30:07,841 - __main__ - INFO - Saved reconstruction log_abs image to reconstruction_mask-antimask_log_abs.png
+2026-02-18 17:30:15,961 - __main__ - INFO - Pipeline completed
+2026-02-18 17:42:28,140 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 17:42:28,275 - model - INFO - Model file model.csv was not found. Falling back to model.
+2026-02-18 18:16:47,799 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 18:16:52,747 - __main__ - INFO - Processed instance 0/360
+2026-02-18 18:16:53,470 - __main__ - INFO - Processed instance 100/360
+2026-02-18 18:16:53,750 - __main__ - INFO - Processed instance 200/360
+2026-02-18 18:16:54,132 - __main__ - INFO - Processed instance 300/360
+2026-02-18 18:16:54,383 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 18:16:54,384 - __main__ - INFO - Processed instance 0/360
+2026-02-18 18:16:54,723 - __main__ - INFO - Processed instance 100/360
+2026-02-18 18:16:55,192 - __main__ - INFO - Processed instance 200/360
+2026-02-18 18:16:56,036 - __main__ - INFO - Processed instance 300/360
+2026-02-18 18:17:03,219 - __main__ - INFO - Reconstruction complete using strategy 'model'.
+2026-02-18 18:17:04,288 - __main__ - INFO - Saved reconstruction raw image to reconstruction_model_raw.png
+2026-02-18 18:17:04,750 - __main__ - INFO - Saved reconstruction normalised image to reconstruction_model_normalised.png
+2026-02-18 18:17:05,273 - __main__ - INFO - Saved reconstruction abs image to reconstruction_model_abs.png
+2026-02-18 18:17:05,923 - __main__ - INFO - Saved reconstruction log_abs image to reconstruction_model_log_abs.png
+2026-02-18 18:17:05,923 - __main__ - INFO - Pipeline completed
+2026-02-18 18:30:26,552 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 18:30:26,667 - model - INFO - Model file model.csv was not found. Falling back to model.
+2026-02-18 18:30:26,749 - __main__ - INFO - Available phases in gamma data: [0, 1, 2, 3, 4, 5, 6]
+2026-02-18 18:30:26,750 - __main__ - INFO - Available phase counts in gamma data: {0: 52, 1: 52, 2: 52, 3: 52, 4: 52, 5: 52, 6: 48}
+2026-02-18 18:30:26,750 - __main__ - INFO - No angle column found in gamma index; inferred phase-angle mapping from evenly spaced rotation.
+2026-02-18 18:30:26,750 - __main__ - INFO -   phase=0 inferred_angle_deg=0.000000
+2026-02-18 18:30:26,750 - __main__ - INFO -   phase=1 inferred_angle_deg=51.428571
+2026-02-18 18:30:26,750 - __main__ - INFO -   phase=2 inferred_angle_deg=102.857143
+2026-02-18 18:30:26,750 - __main__ - INFO -   phase=3 inferred_angle_deg=154.285714
+2026-02-18 18:30:26,751 - __main__ - INFO -   phase=4 inferred_angle_deg=205.714286
+2026-02-18 18:30:26,751 - __main__ - INFO -   phase=5 inferred_angle_deg=257.142857
+2026-02-18 18:30:26,751 - __main__ - INFO -   phase=6 inferred_angle_deg=308.571429
+2026-02-18 18:30:26,751 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 18:30:26,756 - __main__ - INFO - Processed instance 0/360
+2026-02-18 18:30:28,689 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 3 to reconstruction_model_observed_phase_00_instance_0003.png
+2026-02-18 18:30:30,521 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 7 to reconstruction_model_observed_phase_01_instance_0007.png
+2026-02-18 18:30:32,088 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 11 to reconstruction_model_observed_phase_02_instance_0011.png
+2026-02-18 18:30:33,491 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 15 to reconstruction_model_observed_phase_03_instance_0015.png
+2026-02-18 18:30:35,056 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 19 to reconstruction_model_observed_phase_04_instance_0019.png
+2026-02-18 18:30:36,591 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 23 to reconstruction_model_observed_phase_05_instance_0023.png
+2026-02-18 18:30:38,292 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 31 to reconstruction_model_observed_phase_06_instance_0031.png
+2026-02-18 18:30:39,882 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 35 to reconstruction_model_observed_phase_05_instance_0035.png
+2026-02-18 18:30:41,887 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 39 to reconstruction_model_observed_phase_04_instance_0039.png
+2026-02-18 18:30:44,020 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 43 to reconstruction_model_observed_phase_03_instance_0043.png
+2026-02-18 18:30:46,797 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 47 to reconstruction_model_observed_phase_02_instance_0047.png
+2026-02-18 18:30:49,349 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 51 to reconstruction_model_observed_phase_01_instance_0051.png
+2026-02-18 18:30:51,533 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 59 to reconstruction_model_observed_phase_00_instance_0059.png
+2026-02-18 18:30:53,487 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 63 to reconstruction_model_observed_phase_01_instance_0063.png
+2026-02-18 18:30:55,289 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 67 to reconstruction_model_observed_phase_02_instance_0067.png
+2026-02-18 18:30:58,290 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 71 to reconstruction_model_observed_phase_03_instance_0071.png
+2026-02-18 18:31:00,851 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 75 to reconstruction_model_observed_phase_04_instance_0075.png
+2026-02-18 18:31:03,405 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 79 to reconstruction_model_observed_phase_05_instance_0079.png
+2026-02-18 18:31:05,461 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 87 to reconstruction_model_observed_phase_06_instance_0087.png
+2026-02-18 18:31:07,467 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 91 to reconstruction_model_observed_phase_05_instance_0091.png
+2026-02-18 18:31:10,007 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 95 to reconstruction_model_observed_phase_04_instance_0095.png
+2026-02-18 18:31:13,038 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 99 to reconstruction_model_observed_phase_03_instance_0099.png
+2026-02-18 18:31:13,041 - __main__ - INFO - Processed instance 100/360
+2026-02-18 18:31:16,121 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 103 to reconstruction_model_observed_phase_02_instance_0103.png
+2026-02-18 18:31:20,845 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 107 to reconstruction_model_observed_phase_01_instance_0107.png
+2026-02-18 18:31:23,848 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 115 to reconstruction_model_observed_phase_00_instance_0115.png
+2026-02-18 18:31:26,954 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 119 to reconstruction_model_observed_phase_01_instance_0119.png
+2026-02-18 18:31:31,609 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 123 to reconstruction_model_observed_phase_02_instance_0123.png
+2026-02-18 18:31:34,615 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 127 to reconstruction_model_observed_phase_03_instance_0127.png
+2026-02-18 18:31:37,684 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 131 to reconstruction_model_observed_phase_04_instance_0131.png
+2026-02-18 18:31:41,750 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 135 to reconstruction_model_observed_phase_05_instance_0135.png
+2026-02-18 18:31:45,472 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 143 to reconstruction_model_observed_phase_06_instance_0143.png
+2026-02-18 18:31:48,544 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 147 to reconstruction_model_observed_phase_05_instance_0147.png
+2026-02-18 18:31:51,654 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 151 to reconstruction_model_observed_phase_04_instance_0151.png
+2026-02-18 18:31:56,364 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 155 to reconstruction_model_observed_phase_03_instance_0155.png
+2026-02-18 18:31:59,460 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 159 to reconstruction_model_observed_phase_02_instance_0159.png
+2026-02-18 18:32:02,546 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 163 to reconstruction_model_observed_phase_01_instance_0163.png
+2026-02-18 18:32:07,063 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 171 to reconstruction_model_observed_phase_00_instance_0171.png
+2026-02-18 18:32:10,989 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 175 to reconstruction_model_observed_phase_01_instance_0175.png
+2026-02-18 18:32:14,023 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 179 to reconstruction_model_observed_phase_02_instance_0179.png
+2026-02-18 18:32:17,248 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 183 to reconstruction_model_observed_phase_03_instance_0183.png
+2026-02-18 18:32:23,348 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 187 to reconstruction_model_observed_phase_04_instance_0187.png
+2026-02-18 18:32:25,684 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 191 to reconstruction_model_observed_phase_05_instance_0191.png
+2026-02-18 18:32:28,035 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 199 to reconstruction_model_observed_phase_06_instance_0199.png
+2026-02-18 18:32:28,044 - __main__ - INFO - Processed instance 200/360
+2026-02-18 18:32:32,033 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 203 to reconstruction_model_observed_phase_05_instance_0203.png
+2026-02-18 18:32:35,151 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 207 to reconstruction_model_observed_phase_04_instance_0207.png
+2026-02-18 18:32:38,152 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 211 to reconstruction_model_observed_phase_03_instance_0211.png
+2026-02-18 18:32:40,585 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 215 to reconstruction_model_observed_phase_02_instance_0215.png
+2026-02-18 18:32:44,181 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 219 to reconstruction_model_observed_phase_01_instance_0219.png
+2026-02-18 18:32:47,304 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 227 to reconstruction_model_observed_phase_00_instance_0227.png
+2026-02-18 18:32:50,386 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 231 to reconstruction_model_observed_phase_01_instance_0231.png
+2026-02-18 18:32:53,273 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 235 to reconstruction_model_observed_phase_02_instance_0235.png
+2026-02-18 18:32:56,981 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 239 to reconstruction_model_observed_phase_03_instance_0239.png
+2026-02-18 18:33:00,541 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 243 to reconstruction_model_observed_phase_04_instance_0243.png
+2026-02-18 18:33:03,848 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 247 to reconstruction_model_observed_phase_05_instance_0247.png
+2026-02-18 18:33:06,227 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 255 to reconstruction_model_observed_phase_06_instance_0255.png
+2026-02-18 18:33:09,429 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 259 to reconstruction_model_observed_phase_05_instance_0259.png
+2026-02-18 18:33:13,085 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 263 to reconstruction_model_observed_phase_04_instance_0263.png
+2026-02-18 18:33:15,599 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 267 to reconstruction_model_observed_phase_03_instance_0267.png
+2026-02-18 18:33:18,670 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 271 to reconstruction_model_observed_phase_02_instance_0271.png
+2026-02-18 18:33:22,180 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 275 to reconstruction_model_observed_phase_01_instance_0275.png
+2026-02-18 19:13:05,711 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 19:13:05,911 - model - INFO - Model file model.csv was not found. Falling back to model.
+2026-02-18 19:13:06,013 - __main__ - INFO - Available phases in gamma data: [0, 1, 2, 3, 4, 5, 6]
+2026-02-18 19:13:06,013 - __main__ - INFO - Available phase counts in gamma data: {0: 52, 1: 52, 2: 52, 3: 52, 4: 52, 5: 52, 6: 48}
+2026-02-18 19:13:06,013 - __main__ - INFO - No angle column found in gamma index; using coded-aperture mapping angle=(phase*15) mod 90.
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=0 coded_aperture_angle_deg=0.000000
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=1 coded_aperture_angle_deg=15.000000
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=2 coded_aperture_angle_deg=30.000000
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=3 coded_aperture_angle_deg=45.000000
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=4 coded_aperture_angle_deg=60.000000
+2026-02-18 19:13:06,013 - __main__ - INFO -   phase=5 coded_aperture_angle_deg=75.000000
+2026-02-18 19:13:06,024 - __main__ - INFO -   phase=6 coded_aperture_angle_deg=0.000000 (equivalent to 90 deg)
+2026-02-18 19:13:06,024 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 19:13:06,030 - __main__ - INFO - Processed instance 0/360
+2026-02-18 19:13:06,461 - __main__ - INFO - Processed instance 100/360
+2026-02-18 19:13:07,118 - __main__ - INFO - Processed instance 200/360
+2026-02-18 19:13:08,034 - __main__ - INFO - Processed instance 300/360
+2026-02-18 19:13:10,455 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 359 to reconstruction_model_observed_phase_05_instance_0359.png
+2026-02-18 19:13:10,455 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 19:13:10,457 - __main__ - INFO - Processed instance 0/360
+2026-02-18 19:13:10,859 - __main__ - INFO - Processed instance 100/360
+2026-02-18 19:13:11,359 - __main__ - INFO - Processed instance 200/360
+2026-02-18 19:13:11,743 - __main__ - INFO - Processed instance 300/360
+2026-02-18 19:13:13,837 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 359 to reconstruction_model_normalised_phase_05_instance_0359.png
+2026-02-18 19:13:15,788 - __main__ - INFO - Reconstruction complete using strategy 'model'.
+2026-02-18 19:13:15,963 - __main__ - INFO - Saved reconstruction raw image to reconstruction_model_raw.png
+2026-02-18 19:13:16,128 - __main__ - INFO - Saved reconstruction normalised image to reconstruction_model_normalised.png
+2026-02-18 19:13:16,316 - __main__ - INFO - Saved reconstruction abs image to reconstruction_model_abs.png
+2026-02-18 19:13:16,479 - __main__ - INFO - Saved reconstruction log_abs image to reconstruction_model_log_abs.png
+2026-02-18 19:13:16,479 - __main__ - INFO - Pipeline completed
+2026-02-18 19:15:34,852 - data - WARNING - Row 359 has 76800 samples; truncating to 38400.
+2026-02-18 19:15:34,977 - model - INFO - Model file model.csv was not found. Falling back to model.
+2026-02-18 19:15:35,038 - __main__ - INFO - Available phases in gamma data: [0, 1, 2, 3, 4, 5, 6]
+2026-02-18 19:15:35,038 - __main__ - INFO - Available phase counts in gamma data: {0: 52, 1: 52, 2: 52, 3: 52, 4: 52, 5: 52, 6: 48}
+2026-02-18 19:15:35,039 - __main__ - INFO - No angle column found in gamma index; using coded-aperture mapping angle=(phase*15) mod 90.
+2026-02-18 19:15:35,039 - __main__ - INFO -   phase=0 coded_aperture_angle_deg=0.000000
+2026-02-18 19:15:35,039 - __main__ - INFO -   phase=1 coded_aperture_angle_deg=15.000000
+2026-02-18 19:15:35,040 - __main__ - INFO -   phase=2 coded_aperture_angle_deg=30.000000
+2026-02-18 19:15:35,040 - __main__ - INFO -   phase=3 coded_aperture_angle_deg=45.000000
+2026-02-18 19:15:35,040 - __main__ - INFO -   phase=4 coded_aperture_angle_deg=60.000000
+2026-02-18 19:15:35,040 - __main__ - INFO -   phase=5 coded_aperture_angle_deg=75.000000
+2026-02-18 19:15:35,041 - __main__ - INFO -   phase=6 coded_aperture_angle_deg=0.000000 (equivalent to 90 deg)
+2026-02-18 19:15:35,041 - __main__ - INFO - Starting observed-count accumulation pass
+2026-02-18 19:15:35,043 - __main__ - INFO - Processed instance 0/360
+2026-02-18 19:15:36,174 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 3 to reconstruction_model_observed_phase_00_instance_0003.png
+2026-02-18 19:15:37,253 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 7 to reconstruction_model_observed_phase_01_instance_0007.png
+2026-02-18 19:15:38,442 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 11 to reconstruction_model_observed_phase_02_instance_0011.png
+2026-02-18 19:15:39,589 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 15 to reconstruction_model_observed_phase_03_instance_0015.png
+2026-02-18 19:15:40,783 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 19 to reconstruction_model_observed_phase_04_instance_0019.png
+2026-02-18 19:15:42,049 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 23 to reconstruction_model_observed_phase_05_instance_0023.png
+2026-02-18 19:15:43,343 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 31 to reconstruction_model_observed_phase_06_instance_0031.png
+2026-02-18 19:15:44,597 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 35 to reconstruction_model_observed_phase_05_instance_0035.png
+2026-02-18 19:15:45,843 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 39 to reconstruction_model_observed_phase_04_instance_0039.png
+2026-02-18 19:15:47,247 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 43 to reconstruction_model_observed_phase_03_instance_0043.png
+2026-02-18 19:15:48,850 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 47 to reconstruction_model_observed_phase_02_instance_0047.png
+2026-02-18 19:15:50,357 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 51 to reconstruction_model_observed_phase_01_instance_0051.png
+2026-02-18 19:15:51,795 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 59 to reconstruction_model_observed_phase_00_instance_0059.png
+2026-02-18 19:15:53,189 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 63 to reconstruction_model_observed_phase_01_instance_0063.png
+2026-02-18 19:15:54,453 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 67 to reconstruction_model_observed_phase_02_instance_0067.png
+2026-02-18 19:15:55,710 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 71 to reconstruction_model_observed_phase_03_instance_0071.png
+2026-02-18 19:15:57,023 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 75 to reconstruction_model_observed_phase_04_instance_0075.png
+2026-02-18 19:15:58,367 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 79 to reconstruction_model_observed_phase_05_instance_0079.png
+2026-02-18 19:15:59,745 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 87 to reconstruction_model_observed_phase_06_instance_0087.png
+2026-02-18 19:16:01,411 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 91 to reconstruction_model_observed_phase_05_instance_0091.png
+2026-02-18 19:16:02,894 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 95 to reconstruction_model_observed_phase_04_instance_0095.png
+2026-02-18 19:16:04,230 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 99 to reconstruction_model_observed_phase_03_instance_0099.png
+2026-02-18 19:16:04,230 - __main__ - INFO - Processed instance 100/360
+2026-02-18 19:16:05,565 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 103 to reconstruction_model_observed_phase_02_instance_0103.png
+2026-02-18 19:16:06,917 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 107 to reconstruction_model_observed_phase_01_instance_0107.png
+2026-02-18 19:16:08,278 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 115 to reconstruction_model_observed_phase_00_instance_0115.png
+2026-02-18 19:16:09,634 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 119 to reconstruction_model_observed_phase_01_instance_0119.png
+2026-02-18 19:16:11,119 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 123 to reconstruction_model_observed_phase_02_instance_0123.png
+2026-02-18 19:16:12,611 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 127 to reconstruction_model_observed_phase_03_instance_0127.png
+2026-02-18 19:16:14,124 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 131 to reconstruction_model_observed_phase_04_instance_0131.png
+2026-02-18 19:16:15,882 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 135 to reconstruction_model_observed_phase_05_instance_0135.png
+2026-02-18 19:16:17,295 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 143 to reconstruction_model_observed_phase_06_instance_0143.png
+2026-02-18 19:16:18,678 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 147 to reconstruction_model_observed_phase_05_instance_0147.png
+2026-02-18 19:16:20,092 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 151 to reconstruction_model_observed_phase_04_instance_0151.png
+2026-02-18 19:16:21,498 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 155 to reconstruction_model_observed_phase_03_instance_0155.png
+2026-02-18 19:16:23,023 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 159 to reconstruction_model_observed_phase_02_instance_0159.png
+2026-02-18 19:16:25,274 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 163 to reconstruction_model_observed_phase_01_instance_0163.png
+2026-02-18 19:16:27,029 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 171 to reconstruction_model_observed_phase_00_instance_0171.png
+2026-02-18 19:16:28,432 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 175 to reconstruction_model_observed_phase_01_instance_0175.png
+2026-02-18 19:16:29,854 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 179 to reconstruction_model_observed_phase_02_instance_0179.png
+2026-02-18 19:16:31,189 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 183 to reconstruction_model_observed_phase_03_instance_0183.png
+2026-02-18 19:16:32,531 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 187 to reconstruction_model_observed_phase_04_instance_0187.png
+2026-02-18 19:16:33,869 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 191 to reconstruction_model_observed_phase_05_instance_0191.png
+2026-02-18 19:16:35,364 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 199 to reconstruction_model_observed_phase_06_instance_0199.png
+2026-02-18 19:16:35,369 - __main__ - INFO - Processed instance 200/360
+2026-02-18 19:16:36,900 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 203 to reconstruction_model_observed_phase_05_instance_0203.png
+2026-02-18 19:16:38,226 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 207 to reconstruction_model_observed_phase_04_instance_0207.png
+2026-02-18 19:16:39,553 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 211 to reconstruction_model_observed_phase_03_instance_0211.png
+2026-02-18 19:16:40,915 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 215 to reconstruction_model_observed_phase_02_instance_0215.png
+2026-02-18 19:16:42,248 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 219 to reconstruction_model_observed_phase_01_instance_0219.png
+2026-02-18 19:16:43,613 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 227 to reconstruction_model_observed_phase_00_instance_0227.png
+2026-02-18 19:16:45,124 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 231 to reconstruction_model_observed_phase_01_instance_0231.png
+2026-02-18 19:16:47,250 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 235 to reconstruction_model_observed_phase_02_instance_0235.png
+2026-02-18 19:16:49,802 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 239 to reconstruction_model_observed_phase_03_instance_0239.png
+2026-02-18 19:16:51,801 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 243 to reconstruction_model_observed_phase_04_instance_0243.png
+2026-02-18 19:16:53,966 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 247 to reconstruction_model_observed_phase_05_instance_0247.png
+2026-02-18 19:16:56,132 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 255 to reconstruction_model_observed_phase_06_instance_0255.png
+2026-02-18 19:16:58,157 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 259 to reconstruction_model_observed_phase_05_instance_0259.png
+2026-02-18 19:17:00,450 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 263 to reconstruction_model_observed_phase_04_instance_0263.png
+2026-02-18 19:17:02,406 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 267 to reconstruction_model_observed_phase_03_instance_0267.png
+2026-02-18 19:17:06,925 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 271 to reconstruction_model_observed_phase_02_instance_0271.png
+2026-02-18 19:17:12,010 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 275 to reconstruction_model_observed_phase_01_instance_0275.png
+2026-02-18 19:17:18,596 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 283 to reconstruction_model_observed_phase_00_instance_0283.png
+2026-02-18 19:17:21,467 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 287 to reconstruction_model_observed_phase_01_instance_0287.png
+2026-02-18 19:17:23,901 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 291 to reconstruction_model_observed_phase_02_instance_0291.png
+2026-02-18 19:17:26,122 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 295 to reconstruction_model_observed_phase_03_instance_0295.png
+2026-02-18 19:17:28,194 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 299 to reconstruction_model_observed_phase_04_instance_0299.png
+2026-02-18 19:17:28,304 - __main__ - INFO - Processed instance 300/360
+2026-02-18 19:17:30,784 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 303 to reconstruction_model_observed_phase_05_instance_0303.png
+2026-02-18 19:17:32,913 - __main__ - INFO - Saved observed pass snapshot for completed phase 6 at instance 311 to reconstruction_model_observed_phase_06_instance_0311.png
+2026-02-18 19:17:34,900 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 315 to reconstruction_model_observed_phase_05_instance_0315.png
+2026-02-18 19:17:37,570 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 319 to reconstruction_model_observed_phase_04_instance_0319.png
+2026-02-18 19:17:39,346 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 323 to reconstruction_model_observed_phase_03_instance_0323.png
+2026-02-18 19:17:41,831 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 327 to reconstruction_model_observed_phase_02_instance_0327.png
+2026-02-18 19:17:44,404 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 331 to reconstruction_model_observed_phase_01_instance_0331.png
+2026-02-18 19:17:46,398 - __main__ - INFO - Saved observed pass snapshot for completed phase 0 at instance 339 to reconstruction_model_observed_phase_00_instance_0339.png
+2026-02-18 19:17:49,347 - __main__ - INFO - Saved observed pass snapshot for completed phase 1 at instance 343 to reconstruction_model_observed_phase_01_instance_0343.png
+2026-02-18 19:17:51,749 - __main__ - INFO - Saved observed pass snapshot for completed phase 2 at instance 347 to reconstruction_model_observed_phase_02_instance_0347.png
+2026-02-18 19:17:54,204 - __main__ - INFO - Saved observed pass snapshot for completed phase 3 at instance 351 to reconstruction_model_observed_phase_03_instance_0351.png
+2026-02-18 19:18:44,559 - __main__ - INFO - Saved observed pass snapshot for completed phase 4 at instance 355 to reconstruction_model_observed_phase_04_instance_0355.png
+2026-02-18 19:18:46,775 - __main__ - INFO - Saved observed pass snapshot for completed phase 5 at instance 359 to reconstruction_model_observed_phase_05_instance_0359.png
+2026-02-18 19:18:46,775 - __main__ - INFO - Starting normalised-count accumulation pass
+2026-02-18 19:18:46,780 - __main__ - INFO - Processed instance 0/360
+2026-02-18 19:18:49,185 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 3 to reconstruction_model_normalised_phase_00_instance_0003.png
+2026-02-18 19:18:51,234 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 7 to reconstruction_model_normalised_phase_01_instance_0007.png
+2026-02-18 19:18:52,701 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 11 to reconstruction_model_normalised_phase_02_instance_0011.png
+2026-02-18 19:18:54,408 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 15 to reconstruction_model_normalised_phase_03_instance_0015.png
+2026-02-18 19:18:56,818 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 19 to reconstruction_model_normalised_phase_04_instance_0019.png
+2026-02-18 19:19:00,905 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 23 to reconstruction_model_normalised_phase_05_instance_0023.png
+2026-02-18 19:19:03,764 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 31 to reconstruction_model_normalised_phase_06_instance_0031.png
+2026-02-18 19:19:07,025 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 35 to reconstruction_model_normalised_phase_05_instance_0035.png
+2026-02-18 19:19:10,095 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 39 to reconstruction_model_normalised_phase_04_instance_0039.png
+2026-02-18 19:19:12,964 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 43 to reconstruction_model_normalised_phase_03_instance_0043.png
+2026-02-18 19:19:16,453 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 47 to reconstruction_model_normalised_phase_02_instance_0047.png
+2026-02-18 19:19:19,806 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 51 to reconstruction_model_normalised_phase_01_instance_0051.png
+2026-02-18 19:19:23,245 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 59 to reconstruction_model_normalised_phase_00_instance_0059.png
+2026-02-18 19:19:26,025 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 63 to reconstruction_model_normalised_phase_01_instance_0063.png
+2026-02-18 19:19:29,039 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 67 to reconstruction_model_normalised_phase_02_instance_0067.png
+2026-02-18 19:19:32,659 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 71 to reconstruction_model_normalised_phase_03_instance_0071.png
+2026-02-18 19:19:35,485 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 75 to reconstruction_model_normalised_phase_04_instance_0075.png
+2026-02-18 19:19:38,397 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 79 to reconstruction_model_normalised_phase_05_instance_0079.png
+2026-02-18 19:19:41,495 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 87 to reconstruction_model_normalised_phase_06_instance_0087.png
+2026-02-18 19:19:45,091 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 91 to reconstruction_model_normalised_phase_05_instance_0091.png
+2026-02-18 19:19:48,056 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 95 to reconstruction_model_normalised_phase_04_instance_0095.png
+2026-02-18 19:19:50,921 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 99 to reconstruction_model_normalised_phase_03_instance_0099.png
+2026-02-18 19:19:50,921 - __main__ - INFO - Processed instance 100/360
+2026-02-18 19:19:54,162 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 103 to reconstruction_model_normalised_phase_02_instance_0103.png
+2026-02-18 19:19:57,464 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 107 to reconstruction_model_normalised_phase_01_instance_0107.png
+2026-02-18 19:20:00,077 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 115 to reconstruction_model_normalised_phase_00_instance_0115.png
+2026-02-18 19:20:03,161 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 119 to reconstruction_model_normalised_phase_01_instance_0119.png
+2026-02-18 19:20:06,951 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 123 to reconstruction_model_normalised_phase_02_instance_0123.png
+2026-02-18 19:20:09,702 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 127 to reconstruction_model_normalised_phase_03_instance_0127.png
+2026-02-18 19:20:13,034 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 131 to reconstruction_model_normalised_phase_04_instance_0131.png
+2026-02-18 19:20:16,465 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 135 to reconstruction_model_normalised_phase_05_instance_0135.png
+2026-02-18 19:20:19,560 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 143 to reconstruction_model_normalised_phase_06_instance_0143.png
+2026-02-18 19:20:22,927 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 147 to reconstruction_model_normalised_phase_05_instance_0147.png
+2026-02-18 19:20:26,480 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 151 to reconstruction_model_normalised_phase_04_instance_0151.png
+2026-02-18 19:20:29,996 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 155 to reconstruction_model_normalised_phase_03_instance_0155.png
+2026-02-18 19:20:33,006 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 159 to reconstruction_model_normalised_phase_02_instance_0159.png
+2026-02-18 19:20:37,019 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 163 to reconstruction_model_normalised_phase_01_instance_0163.png
+2026-02-18 19:20:39,829 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 171 to reconstruction_model_normalised_phase_00_instance_0171.png
+2026-02-18 19:20:43,579 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 175 to reconstruction_model_normalised_phase_01_instance_0175.png
+2026-02-18 19:20:47,180 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 179 to reconstruction_model_normalised_phase_02_instance_0179.png
+2026-02-18 19:20:50,683 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 183 to reconstruction_model_normalised_phase_03_instance_0183.png
+2026-02-18 19:20:53,905 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 187 to reconstruction_model_normalised_phase_04_instance_0187.png
+2026-02-18 19:20:56,702 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 191 to reconstruction_model_normalised_phase_05_instance_0191.png
+2026-02-18 19:20:59,878 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 199 to reconstruction_model_normalised_phase_06_instance_0199.png
+2026-02-18 19:20:59,884 - __main__ - INFO - Processed instance 200/360
+2026-02-18 19:21:02,880 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 203 to reconstruction_model_normalised_phase_05_instance_0203.png
+2026-02-18 19:21:06,305 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 207 to reconstruction_model_normalised_phase_04_instance_0207.png
+2026-02-18 19:21:09,267 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 211 to reconstruction_model_normalised_phase_03_instance_0211.png
+2026-02-18 19:21:12,359 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 215 to reconstruction_model_normalised_phase_02_instance_0215.png
+2026-02-18 19:21:15,814 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 219 to reconstruction_model_normalised_phase_01_instance_0219.png
+2026-02-18 19:21:19,075 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 227 to reconstruction_model_normalised_phase_00_instance_0227.png
+2026-02-18 19:21:22,839 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 231 to reconstruction_model_normalised_phase_01_instance_0231.png
+2026-02-18 19:21:27,048 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 235 to reconstruction_model_normalised_phase_02_instance_0235.png
+2026-02-18 19:21:30,301 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 239 to reconstruction_model_normalised_phase_03_instance_0239.png
+2026-02-18 19:21:32,996 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 243 to reconstruction_model_normalised_phase_04_instance_0243.png
+2026-02-18 19:21:37,090 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 247 to reconstruction_model_normalised_phase_05_instance_0247.png
+2026-02-18 19:21:40,336 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 255 to reconstruction_model_normalised_phase_06_instance_0255.png
+2026-02-18 19:21:43,468 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 259 to reconstruction_model_normalised_phase_05_instance_0259.png
+2026-02-18 19:21:47,961 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 263 to reconstruction_model_normalised_phase_04_instance_0263.png
+2026-02-18 19:21:51,411 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 267 to reconstruction_model_normalised_phase_03_instance_0267.png
+2026-02-18 19:21:55,040 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 271 to reconstruction_model_normalised_phase_02_instance_0271.png
+2026-02-18 19:21:59,855 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 275 to reconstruction_model_normalised_phase_01_instance_0275.png
+2026-02-18 19:22:03,219 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 283 to reconstruction_model_normalised_phase_00_instance_0283.png
+2026-02-18 19:22:06,721 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 287 to reconstruction_model_normalised_phase_01_instance_0287.png
+2026-02-18 19:22:11,078 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 291 to reconstruction_model_normalised_phase_02_instance_0291.png
+2026-02-18 19:22:14,964 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 295 to reconstruction_model_normalised_phase_03_instance_0295.png
+2026-02-18 19:22:18,822 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 299 to reconstruction_model_normalised_phase_04_instance_0299.png
+2026-02-18 19:22:18,833 - __main__ - INFO - Processed instance 300/360
+2026-02-18 19:22:22,085 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 303 to reconstruction_model_normalised_phase_05_instance_0303.png
+2026-02-18 19:22:25,356 - __main__ - INFO - Saved normalised pass snapshot for completed phase 6 at instance 311 to reconstruction_model_normalised_phase_06_instance_0311.png
+2026-02-18 19:22:28,774 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 315 to reconstruction_model_normalised_phase_05_instance_0315.png
+2026-02-18 19:22:31,638 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 319 to reconstruction_model_normalised_phase_04_instance_0319.png
+2026-02-18 19:22:34,646 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 323 to reconstruction_model_normalised_phase_03_instance_0323.png
+2026-02-18 19:22:37,176 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 327 to reconstruction_model_normalised_phase_02_instance_0327.png
+2026-02-18 19:22:40,160 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 331 to reconstruction_model_normalised_phase_01_instance_0331.png
+2026-02-18 19:22:42,913 - __main__ - INFO - Saved normalised pass snapshot for completed phase 0 at instance 339 to reconstruction_model_normalised_phase_00_instance_0339.png
+2026-02-18 19:22:45,590 - __main__ - INFO - Saved normalised pass snapshot for completed phase 1 at instance 343 to reconstruction_model_normalised_phase_01_instance_0343.png
+2026-02-18 19:22:48,340 - __main__ - INFO - Saved normalised pass snapshot for completed phase 2 at instance 347 to reconstruction_model_normalised_phase_02_instance_0347.png
+2026-02-18 19:22:51,625 - __main__ - INFO - Saved normalised pass snapshot for completed phase 3 at instance 351 to reconstruction_model_normalised_phase_03_instance_0351.png
+2026-02-18 19:22:55,877 - __main__ - INFO - Saved normalised pass snapshot for completed phase 4 at instance 355 to reconstruction_model_normalised_phase_04_instance_0355.png
+2026-02-18 19:23:00,102 - __main__ - INFO - Saved normalised pass snapshot for completed phase 5 at instance 359 to reconstruction_model_normalised_phase_05_instance_0359.png
+2026-02-18 19:23:02,915 - __main__ - INFO - Reconstruction complete using strategy 'model'.
+2026-02-18 19:23:04,555 - __main__ - INFO - Saved reconstruction raw image to reconstruction_model_raw.png
+2026-02-18 19:23:06,127 - __main__ - INFO - Saved reconstruction normalised image to reconstruction_model_normalised.png
+2026-02-18 19:23:07,874 - __main__ - INFO - Saved reconstruction abs image to reconstruction_model_abs.png
+2026-02-18 19:23:10,463 - __main__ - INFO - Saved reconstruction log_abs image to reconstruction_model_log_abs.png
+2026-02-18 19:23:10,464 - __main__ - INFO - Pipeline completed

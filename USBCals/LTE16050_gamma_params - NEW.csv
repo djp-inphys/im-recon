@@ -1,0 +1,8 @@
+x_gain,18
+x_offs,0
+y_gain,18
+y_offs,-330
+dec_right_shift,0
+dec_down_shift,0
+servo_gear_ratio,11.2
+servo_multi_offset,6

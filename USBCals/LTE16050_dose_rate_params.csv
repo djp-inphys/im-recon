@@ -1,0 +1,9 @@
+camera_height,82
+gnd_mult,0.0031
+vert_mult,0.08
+art_corr_gain,0.5681
+art_corr_offs,-0.153
+dose1cm_bkgnd_thres,0.5
+dose1cm_param1,5
+dose1cm_param2,20
+gm_factor,500
