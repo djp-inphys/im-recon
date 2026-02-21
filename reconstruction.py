@@ -9,7 +9,7 @@ import numpy as np
 
 from data import ObservationData
 from mask_antimask import MaskAntiMaskConfig, MaskAntiMaskReconstruction
-from model import Model
+from model import Model, SimilarityMetric
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +21,7 @@ class ReconstructionContext:
     bin_low: int
     bin_high: int
     target_size: int = 70
+    metric: SimilarityMetric = "spearman"
 
 
 @dataclass
@@ -80,12 +81,14 @@ class ModelCorrelationStrategy(ReconstructionStrategy):
             bin_high=context.bin_high,
             active_phases=context.active_phases,
             target_size=context.target_size,
+            metric=context.metric,
         )
 
         return ReconstructionResult(
             image=image,
             metadata={
                 "strategy": self.name,
+                "metric": context.metric,
                 "active_phase_count": len(context.active_phases),
                 "bin_low": context.bin_low,
                 "bin_high": context.bin_high,

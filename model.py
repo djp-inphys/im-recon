@@ -5,14 +5,106 @@ import logging
 import math
 import re
 from pathlib import Path
-from typing import Sequence
+from typing import Literal, Sequence
 
 import numpy as np
 import pandas as pd
-from scipy.stats import pearsonr
+from scipy.stats import spearmanr
 
 from data import ObservationData
 from splines import Interface
+
+# ---------------------------------------------------------------------------
+# Figure-of-Merit helpers
+# ---------------------------------------------------------------------------
+
+SimilarityMetric = Literal["cosine", "spearman", "poisson", "pearson"]
+
+
+def _cosine_similarity(observed: np.ndarray, model: np.ndarray) -> float:
+    """Cosine similarity between two non-negative count vectors.
+
+    Unlike Pearson, this does *not* subtract the mean, so it directly
+    measures how well the model's flux distribution shape matches
+    the observed one.  For positive-only count data the result is in [0, 1].
+    """
+    obs_norm = np.linalg.norm(observed)
+    mod_norm = np.linalg.norm(model)
+    if obs_norm == 0.0 or mod_norm == 0.0:
+        return 0.0
+    return float(np.dot(observed, model) / (obs_norm * mod_norm))
+
+
+def _spearman_similarity(observed: np.ndarray, model: np.ndarray) -> float:
+    """Spearman rank correlation between the two vectors.
+
+    Measures monotone (not just linear) agreement, so it is more robust to
+    non-linearities and outliers than Pearson while preserving the 'sorted
+    across phases' rationale described in the original design.
+    Result is in [-1, 1]; only finite values are returned.
+    """
+    if np.all(observed == observed[0]) or np.all(model == model[0]):
+        # Constant vector — rank correlation is undefined.
+        return 0.0
+    rho, _ = spearmanr(observed, model)
+    return float(rho) if np.isfinite(rho) else 0.0
+
+
+def _poisson_log_likelihood_score(observed: np.ndarray, model: np.ndarray) -> float:
+    """Profile Poisson log-likelihood score (higher = better fit).
+
+    For count data that follow Poisson statistics this is the statistically
+    optimal figure of merit.  The scale factor between the model and the
+    observation is eliminated analytically (profile likelihood), so only
+    the *shape* of the model is tested.
+
+    Score = sum_i [ O_i * log(lambda_i) - lambda_i ]
+    where lambda_i = scale * M_i  and  scale = sum(O) / sum(M).
+
+    The result is then normalised by the number of terms so that images
+    reconstructed with different numbers of active phases are comparable.
+    """
+    obs_total = np.sum(observed)
+    mod_total = np.sum(model)
+    if obs_total == 0.0 or mod_total == 0.0:
+        return 0.0
+
+    scale = obs_total / mod_total
+    lam = scale * model  # expected counts under this model pixel
+
+    # Only include terms where lambda > 0 and observed >= 0.
+    valid = lam > 0.0
+    if not np.any(valid):
+        return 0.0
+
+    # Poisson log-likelihood: O*log(lam) - lam  (dropping the log(O!) constant)
+    obs_v = observed[valid]
+    lam_v = lam[valid]
+    ll = np.sum(obs_v * np.log(lam_v) - lam_v)
+    return float(ll / valid.sum())
+
+
+def compute_similarity(
+    observed: np.ndarray,
+    model: np.ndarray,
+    metric: SimilarityMetric = "spearman",
+) -> float:
+    """Unified entry-point for the figure-of-merit calculation."""
+    if metric == "cosine":
+        return _cosine_similarity(observed, model)
+    if metric == "spearman":
+        return _spearman_similarity(observed, model)
+    if metric == "poisson":
+        return _poisson_log_likelihood_score(observed, model)
+    if metric == "pearson":
+        # Legacy Pearson path kept for reproducibility comparisons.
+        obs_std = np.std(observed)
+        mod_std = np.std(model)
+        if obs_std == 0.0 or mod_std == 0.0:
+            return 0.0
+        r = float(np.corrcoef(observed, model)[0, 1])
+        return r if np.isfinite(r) else 0.0
+    raise ValueError(f"Unknown similarity metric '{metric}'.")
 
 logger = logging.getLogger(__name__)
 
@@ -225,7 +317,37 @@ class Model:
         bin_high: int,
         active_phases: Sequence[int],
         target_size: int = 70,
+        metric: SimilarityMetric = "spearman",
     ) -> np.ndarray:
+        """Reconstruct a source-position image using the chosen figure-of-merit.
+
+        Parameters
+        ----------
+        bin_low / bin_high:
+            ADC energy bin range to integrate over.
+        active_phases:
+            Phase IDs that have accumulated enough data to be used.
+        target_size:
+            Output image side length in pixels (image is target_size × target_size).
+        metric:
+            Figure-of-merit used to score the agreement between the model
+            prediction and the observed counts for each candidate source position.
+
+            ``"cosine"``   — Cosine similarity (default).  Does not subtract the
+                             mean, so it faithfully measures flux-distribution
+                             shape alignment for non-negative count data.
+                             Result in [0, 1].
+
+            ``"spearman"`` — Spearman rank correlation.  Captures monotone
+                             (not just linear) agreement; robust to outliers.
+                             Result in [-1, 1].
+
+            ``"poisson"``  — Profile Poisson log-likelihood score.  Statistically
+                             optimal for count data; eliminates the unknown scale
+                             factor analytically.  Higher values = better fit.
+
+            ``"pearson"``  — Legacy Pearson r (original behaviour).
+        """
         active_phase_list = list(active_phases)
         active_count = len(active_phase_list)
         if active_count == 0:
@@ -241,6 +363,8 @@ class Model:
         actual = np.zeros(self.data.n_channels * active_count, dtype=np.float64)
         sub_model = np.zeros(self.data.n_channels * active_count, dtype=np.float64)
         regression = np.zeros(self.pixel_count, dtype=np.float64)
+
+        logger.debug("Running recon with metric='%s' over %d source positions.", metric, self.pixel_count)
 
         for src_pos_index in range(self.pixel_count):
             for channel in range(self.data.n_channels):
@@ -261,14 +385,7 @@ class Model:
                         model_phase_index,
                     ]
 
-            actual_sum = np.sum(actual)
-            model_sum = np.sum(sub_model)
-            if actual_sum == 0 or model_sum == 0:
-                regression[src_pos_index] = 0.0
-            else:
-                norm_model = 100.0 * sub_model * (actual_sum / model_sum)
-                q, _ = pearsonr(actual, norm_model)
-                regression[src_pos_index] = 0.0 if not np.isfinite(q) else q
+            regression[src_pos_index] = compute_similarity(actual, sub_model, metric=metric)
 
             actual.fill(0.0)
             sub_model.fill(0.0)

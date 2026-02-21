@@ -1,1 +1,12 @@
 /dara.py
+
+# Generated output images and data
+*.png
+*.csv
+
+# Allow video files
+!*.mp4
+
+# Python cache
+__pycache__/
+*.pyc

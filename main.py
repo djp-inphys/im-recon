@@ -30,9 +30,12 @@ class PipelineConfig:
     stride: int = 1
     min_active_phases_for_normalisation: int = 7
     reconstruction_strategy: str = "none"
+    reconstruction_metric: str = "spearman"
     reconstruction_bin_low: int = 0
     reconstruction_bin_high: int = 600
     reconstruction_output: str | None = None
+    reconstruction_output_format: str = "both"
+    reconstruction_render_mode: str = "image"
     reconstruction_image_prefix: str | None = None
     reconstruction_image_cmap: str = "inferno"
     final_phase_images_only: bool = False
@@ -103,10 +106,12 @@ class ReconstructionPipeline:
 
         active_phases = normalised_active_phases or observed_active_phases
         result = self._run_reconstruction(active_phases)
-        if result is not None and self.config.reconstruction_output:
-            self._write_reconstruction_result(result)
         if result is not None:
-            self._write_reconstruction_images(result)
+            self._write_reconstruction_images(
+                result,
+                active_phases=active_phases,
+                final_instance=self.data.num_instances - 1,
+            )
 
         logger.info("Pipeline completed")
         return result
@@ -177,6 +182,7 @@ class ReconstructionPipeline:
             bin_low=self.config.reconstruction_bin_low,
             bin_high=self.config.reconstruction_bin_high,
             target_size=self.config.target_image_size,
+            metric=self.config.reconstruction_metric,
         )
 
         result = self.strategy.reconstruct(context)
@@ -195,6 +201,8 @@ class ReconstructionPipeline:
         completed_instance: int,
         active_phases: Sequence[int],
     ) -> None:
+        if not (self._writes_png_outputs() or self._writes_csv_outputs()):
+            return
         result = self._run_reconstruction(active_phases, log_completion=False)
         if result is None:
             return
@@ -204,18 +212,37 @@ class ReconstructionPipeline:
         )
         variants = self._build_image_variants(image)
         prefix = self._resolve_reconstruction_image_prefix()
-        output_path = (
+        output_stem = (
             f"{prefix}_{pass_name}_phase_{int(completed_phase):02d}"
-            f"_instance_{int(completed_instance):04d}.png"
+            f"_instance_{int(completed_instance):04d}"
         )
-        self._save_image(variants["normalised"], output_path, title=f"{self.strategy.name} phase {completed_phase}")
+        self._save_output_artifacts(
+            variants["normalised"],
+            output_stem,
+            title=(
+                f"{self.strategy.name} phase {completed_phase} "
+                f"instance {completed_instance}"
+            ),
+        )
         logger.info(
-            "Saved %s pass snapshot for completed phase %d at instance %d to %s",
+            "Saved %s pass snapshot artifacts for completed phase %d at instance %d with stem %s",
             pass_name,
             completed_phase,
             completed_instance,
-            output_path,
+            output_stem,
         )
+
+    def _writes_csv_outputs(self) -> bool:
+        return self.config.reconstruction_output_format.strip().lower() in {"csv", "both"}
+
+    def _writes_png_outputs(self) -> bool:
+        return self.config.reconstruction_output_format.strip().lower() in {"png", "both"}
+
+    def _writes_image_png_outputs(self) -> bool:
+        return self.config.reconstruction_render_mode.strip().lower() in {"image", "both"}
+
+    def _writes_surface_png_outputs(self) -> bool:
+        return self.config.reconstruction_render_mode.strip().lower() in {"surface", "both"}
 
     def _log_available_phase_angle_list(self) -> None:
         gamma_index = self.data.gamma_index.copy()
@@ -281,26 +308,30 @@ class ReconstructionPipeline:
     def _infer_phase_angles(phases: Sequence[int]) -> list[tuple[int, float]]:
         return [(int(phase), float((int(phase) * 15) % 90)) for phase in phases]
 
-    def _write_reconstruction_result(self, result: ReconstructionResult) -> None:
-        image = result.image.reshape(
-            self.config.target_image_size,
-            self.config.target_image_size,
-        )
-        np.savetxt(self.config.reconstruction_output, image, delimiter=",")
-        logger.info("Saved reconstruction image to %s", self.config.reconstruction_output)
-
-    def _write_reconstruction_images(self, result: ReconstructionResult) -> None:
+    def _write_reconstruction_images(
+        self,
+        result: ReconstructionResult,
+        *,
+        active_phases: Sequence[int],
+        final_instance: int,
+    ) -> None:
         image = result.image.reshape(
             self.config.target_image_size,
             self.config.target_image_size,
         )
         prefix = self._resolve_reconstruction_image_prefix()
         image_variants = self._build_image_variants(image)
-
-        for suffix, variant in image_variants.items():
-            output_path = f"{prefix}_{suffix}.png"
-            self._save_image(variant, output_path)
-            logger.info("Saved reconstruction %s image to %s", suffix, output_path)
+        output_stem = f"{prefix}_normalised"
+        phase_label = ",".join(str(int(phase)) for phase in active_phases)
+        self._save_output_artifacts(
+            image_variants["normalised"],
+            output_stem,
+            title=(
+                f"{self.strategy.name} phases [{phase_label}] "
+                f"instance {int(final_instance)}"
+            ),
+        )
+        logger.info("Saved reconstruction normalised artifacts with stem %s", output_stem)
 
     def _resolve_reconstruction_image_prefix(self) -> str:
         if self.config.reconstruction_image_prefix:
@@ -338,6 +369,51 @@ class ReconstructionPipeline:
         plt.savefig(output_path, dpi=150)
         plt.close()
 
+    def _save_surface(self, image: np.ndarray, output_path: str, *, title: str | None = None) -> None:
+        rows, cols = image.shape
+        x_coords = np.arange(cols)
+        y_coords = np.arange(rows)
+        x_grid, y_grid = np.meshgrid(x_coords, y_coords)
+
+        figure = plt.figure(figsize=(6, 5))
+        axis = figure.add_subplot(111, projection="3d")
+        surface = axis.plot_surface(
+            x_grid,
+            y_grid,
+            image,
+            cmap=self.config.reconstruction_image_cmap,
+            linewidth=0,
+            antialiased=True,
+        )
+        figure.colorbar(surface, ax=axis, shrink=0.7, aspect=12)
+        axis.set_title(title or self.strategy.name)
+        axis.set_xlabel("X")
+        axis.set_ylabel("Y")
+        axis.set_zlabel("Value")
+        figure.tight_layout()
+        figure.savefig(output_path, dpi=150)
+        plt.close(figure)
+
+    def _save_output_artifacts(
+        self,
+        image: np.ndarray,
+        output_stem: str,
+        *,
+        title: str | None = None,
+    ) -> None:
+        if self._writes_png_outputs():
+            if self._writes_image_png_outputs():
+                self._save_image(image, f"{output_stem}.png", title=title)
+            if self._writes_surface_png_outputs():
+                surface_suffix = "_surface" if self._writes_image_png_outputs() else ""
+                self._save_surface(
+                    image,
+                    f"{output_stem}{surface_suffix}.png",
+                    title=title,
+                )
+        if self._writes_csv_outputs():
+            np.savetxt(f"{output_stem}.csv", image, delimiter=",")
+
     @staticmethod
     def _truncate_file(file_path: str) -> None:
         with open(file_path, "w", encoding="utf-8"):
@@ -366,9 +442,12 @@ def build_config_from_args(args: argparse.Namespace) -> PipelineConfig:
         stride=args.stride,
         min_active_phases_for_normalisation=args.min_active_phases,
         reconstruction_strategy=args.strategy,
+        reconstruction_metric=args.reconstruction_metric,
         reconstruction_bin_low=args.bin_low,
         reconstruction_bin_high=args.bin_high,
         reconstruction_output=args.reconstruction_output,
+        reconstruction_output_format=args.reconstruction_output_format,
+        reconstruction_render_mode=args.reconstruction_render_mode,
         reconstruction_image_prefix=args.reconstruction_image_prefix,
         reconstruction_image_cmap=args.reconstruction_image_cmap,
         final_phase_images_only=args.final_phase_images_only,
@@ -412,6 +491,18 @@ def parse_args() -> argparse.Namespace:
         help="Reconstruction strategy",
     )
     parser.add_argument(
+        "--reconstruction-metric",
+        choices=["pearson", "spearman", "poisson", "pearson"],
+        default="cosine",
+        help=(
+            "Figure-of-merit metric for the model correlation strategy. "
+            "'spearman' (default) uses rank correlation for monotone robustness; "
+            "'cosine' measures flux-shape alignment without mean-subtraction; "
+            "'poisson' applies a profile Poisson log-likelihood (statistically optimal for count data); "
+            "'pearson' restores the original linear-correlation behaviour."
+        ),
+    )
+    parser.add_argument(
         "--bin-low",
         type=int,
         default=0,
@@ -426,15 +517,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--reconstruction-output",
         default=None,
-        help="Optional CSV output for reconstruction image",
+        help="Optional output base path (extension is ignored and used as stem for final artifacts)",
+    )
+    parser.add_argument(
+        "--reconstruction-output-format",
+        choices=["csv", "png", "both"],
+        default="both",
+        help="Output format for final reconstructed image(s): csv, png, or both",
+    )
+    parser.add_argument(
+        "--reconstruction-render-mode",
+        choices=["image", "surface", "both"],
+        default="surface",
+        help="PNG render mode: heatmap image, 3D surface, or both",
     )
     parser.add_argument(
         "--reconstruction-image-prefix",
         default=None,
         help=(
             "Optional prefix for reconstruction PNG images. "
-            "Files are saved as <prefix>_raw.png, <prefix>_normalised.png, "
-            "<prefix>_abs.png, and <prefix>_log_abs.png."
+            "Files are saved as <prefix>_normalised.[png|csv], and phase snapshots "
+            "use the same prefix and selected output format."
         ),
     )
     parser.add_argument(
