@@ -87,7 +87,7 @@ def _poisson_log_likelihood_score(observed: np.ndarray, model: np.ndarray) -> fl
 def compute_similarity(
     observed: np.ndarray,
     model: np.ndarray,
-    metric: SimilarityMetric = "spearman",
+    metric: SimilarityMetric = "cosine",
 ) -> float:
     """Unified entry-point for the figure-of-merit calculation."""
     if metric == "cosine":
@@ -317,7 +317,7 @@ class Model:
         bin_high: int,
         active_phases: Sequence[int],
         target_size: int = 70,
-        metric: SimilarityMetric = "spearman",
+        metric: SimilarityMetric = "cosine",
     ) -> np.ndarray:
         """Reconstruct a source-position image using the chosen figure-of-merit.
 

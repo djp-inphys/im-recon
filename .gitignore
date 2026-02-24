@@ -10,3 +10,9 @@
 # Python cache
 __pycache__/
 *.pyc
+
+# Allow README reference images
+!model_single_anode_example.png
+!model_all_anodes_regression.png
+!readme_single_anode.png
+!readme_all_anodes.png

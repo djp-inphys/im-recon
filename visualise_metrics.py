@@ -345,76 +345,168 @@ print("Saved  metrics_fig2_mean_subtraction.png")
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FIGURE 3 — Outlier robustness: Pearson vs Spearman
+# FIGURE 3 — Outlier robustness in the all-anodes × all-CA-phases scatter
 # ═════════════════════════════════════════════════════════════════════════════
 #
-# A single-channel noise spike is added at increasing amplitudes.  The
-# Pearson score falls rapidly because the spike inflates sigma(O), shrinking
-# the correlation denominator.  Spearman's rank transformation caps the
-# impact at a single rank displacement.
+# A synthetic scatter replicates the real reconstruction format:
+#   64 anodes × 7 CA phases = 448 (model power, observed count) pairs
+#   Each anode has its own non-CA floor (Y-offset nuisance parameter).
+#   All anodes share the same true via-CA slope.
+#
+# A single point is spiked at increasing amplitudes.  Left and middle panels
+# show the scatter before/after; right panel shows how each metric degrades.
 # ─────────────────────────────────────────────────────────────────────────────
 
-spike_sizes = [0, 100, 300, 600]
-p_scores  = []
-sp_scores = []
-for spike in spike_sizes:
-    O_s = observed.copy()
-    O_s[SPIKE_IDX] += spike
-    p_scores.append(_pearson(O_s, true_model))
-    sp_scores.append(_spearman(O_s, true_model))
+_N_AN = 64
+_N_PH = 7
+_TRUE_SLOPE = 0.12   # via-CA slope (counts per unit model power)
 
-fig3, (ax3a, ax3b, ax3c) = plt.subplots(1, 3, figsize=(14, 5))
+rng3 = np.random.default_rng(42)
+
+# Model powers: realistic range matching real camera data
+_mp_grid = rng3.uniform(5_000, 38_000, (_N_AN, _N_PH))
+
+# Per-anode non-CA floors: the Y-offset nuisance parameter for each anode
+_floors = rng3.uniform(3_500, 7_500, _N_AN)
+
+# Expected counts = via-CA component + floor; add Poisson noise
+_expected = _TRUE_SLOPE * _mp_grid + _floors[:, np.newaxis]
+_obs_grid  = rng3.poisson(np.maximum(_expected, 1).astype(int)).astype(float)
+
+# Flatten to 1-D scatter vectors
+x_sc = _mp_grid.ravel()     # model power  (448 values)
+y_sc = _obs_grid.ravel()    # observed counts (448 values)
+
+# Spike the 10 points with the LOWEST model power: they have low x-rank, so
+# adding counts moves them to the top of the y-rank range, creating large
+# rank mismatches that stress Pearson more than Cosine / Spearman.
+_N_SPIKES = 10
+_spike_idxs = np.argsort(x_sc)[:_N_SPIKES]
+
+
+def _ols_slope(x: np.ndarray, y: np.ndarray) -> tuple[float, float]:
+    """Return (slope, intercept) from OLS fitted to the scatter."""
+    n = float(len(x))
+    sx, sy = x.sum(), y.sum()
+    sxx, sxy = (x * x).sum(), (x * y).sum()
+    d = n * sxx - sx * sx
+    if abs(d) < 1e-12:
+        return 0.0, float(sy / n)
+    slope = (n * sxy - sx * sy) / d
+    return float(slope), float((sy - slope * sx) / n)
+
+
+spike_sizes_3 = [0, 200, 600, 1_500, 3_000, 6_000]
+_ols_slopes, _ols_intercepts = [], []
+_m3_scores: dict[str, list[float]] = {m: [] for m in METRICS}
+
+for _sp in spike_sizes_3:
+    _ys = y_sc.copy()
+    _ys[_spike_idxs] += _sp          # spike ALL 10 low-power points
+    _sl, _ic = _ols_slope(x_sc, _ys)
+    _ols_slopes.append(_sl)
+    _ols_intercepts.append(_ic)
+    for _mname, _mfn in METRICS.items():
+        _m3_scores[_mname].append(_mfn(_ys, x_sc))  # type: ignore[operator]
+
+# Normalise each metric so that the CLEAN (spike=0) case is always 1.0 and
+# the most-degraded case is 0.0.  This keeps the y-axis meaning consistent:
+# 1.0 = baseline, dropping toward 0 = degraded.
+def _norm3(vals: list[float]) -> np.ndarray:
+    v = np.array(vals, dtype=float)
+    clean = v[0]
+    worst = v.min() if v[-1] < v[0] else v.max()   # direction of degradation
+    span = abs(clean - worst)
+    if span < 1e-12:
+        return np.ones_like(v)
+    # Map: clean → 1.0, worst → 0.0
+    return (v - worst) / span if clean > worst else 1.0 - (v - clean) / span
+
+
+fig3, (ax3a, ax3b, ax3c) = plt.subplots(1, 3, figsize=(15, 5))
 fig3.suptitle(
-    "Figure 3 — Outlier robustness: Pearson vs Spearman",
-    fontsize=12, fontweight="bold",
+    "Figure 3 — Outlier robustness: all-anodes × all-CA-phases scatter\n"
+    "(synthetic: 64 anodes × 7 phases, per-anode floors, shared via-CA slope)",
+    fontsize=11, fontweight="bold",
 )
 
-# Left: vector with no spike
-ax3a.bar(np.arange(len(observed)), observed, color="#555", width=1.0, alpha=0.7, label="Observed O")
-ax3a.step(np.arange(len(true_model)), true_model, where="mid", color="crimson",
-          linewidth=1.8, label="Model M (truth)")
-ax3a.set_title("Observation vs model\n(no outlier)")
-ax3a.set_xlabel("Channel × Phase index")
-ax3a.set_ylabel("Counts")
-ax3a.legend()
+_xfit = np.linspace(x_sc.min(), x_sc.max(), 300)
 
-# Middle: vector with large spike
-O_spike = observed.copy()
-O_spike[SPIKE_IDX] += 600
-ax3b.bar(np.arange(len(O_spike)), O_spike, color="#555", width=1.0, alpha=0.7, label="Observed O")
-ax3b.step(np.arange(len(true_model)), true_model, where="mid", color="crimson",
-          linewidth=1.8, label="Model M (truth)")
+# ── Left: clean scatter ───────────────────────────────────────────────────────
+ax3a.scatter(x_sc, y_sc, s=7, alpha=0.35, color="#377eb8",
+             label="448 points  (64 anodes × 7 phases)")
+_sl0, _ic0 = _ols_slopes[0], _ols_intercepts[0]
+ax3a.plot(_xfit, _sl0 * _xfit + _ic0, "--", color="#111",
+          linewidth=2.0, label=f"OLS slope = {_sl0:.4f}")
+ax3a.set_title("Clean scatter\n(no outlier)")
+ax3a.set_xlabel("Calculated model power")
+ax3a.set_ylabel("Observed anode counts")
+ax3a.legend(fontsize=7)
+ax3a.grid(alpha=0.25)
+
+# ── Middle: scatter with large spikes on 10 lowest-model-power points ────────
+_y_big = y_sc.copy()
+_y_big[_spike_idxs] += spike_sizes_3[-1]   # +6000 counts on 10 points
+
+# Plot non-spiked points first, then highlight the spiked ones
+_mask = np.zeros(len(x_sc), dtype=bool)
+_mask[_spike_idxs] = True
+ax3b.scatter(x_sc[~_mask], _y_big[~_mask], s=7, alpha=0.35, color="#377eb8")
+ax3b.scatter(
+    x_sc[_mask], _y_big[_mask],
+    s=90, color="crimson", zorder=6, marker="*",
+    label=f"+{spike_sizes_3[-1]:,} counts (10 outliers)",
+)
+_sl_big, _ic_big = _ols_slopes[-1], _ols_intercepts[-1]
+ax3b.plot(_xfit, _sl_big * _xfit + _ic_big, "--", color="#111",
+          linewidth=2.0, label=f"OLS slope = {_sl_big:.4f}  (degraded)")
+ax3b.plot(_xfit, _sl0 * _xfit + _ic0, ":", color="#888",
+          linewidth=1.4, label=f"Clean slope = {_sl0:.4f}")
+# Annotate the cluster of spiked points using axes-fraction coords
+_ann_xy = (x_sc[_spike_idxs].mean(), _y_big[_spike_idxs].max())
 ax3b.annotate(
-    "+600 counts\n(cosmic-ray spike)",
-    xy=(SPIKE_IDX, O_spike[SPIKE_IDX]),
-    xytext=(SPIKE_IDX + 12, O_spike[SPIKE_IDX] * 0.9),
-    arrowprops=dict(arrowstyle="->", color="crimson"),
+    f"10 points each spiked\nby +{spike_sizes_3[-1]:,} counts\n(lowest model-power points)",
+    xy=_ann_xy,
+    xycoords="data",
+    xytext=(0.28, 0.80),
+    textcoords="axes fraction",
+    arrowprops=dict(arrowstyle="->", color="crimson", lw=1.4),
     fontsize=8, color="crimson",
 )
-ax3b.set_title("Observation vs model\n(large outlier at one channel)")
-ax3b.set_xlabel("Channel × Phase index")
-ax3b.set_ylabel("Counts")
-ax3b.legend()
-
-# Right: score degradation lines
-ax3c.plot(spike_sizes, p_scores,  "o-", color=PALETTE["Pearson"],  linewidth=2.2,
-          markersize=7, label="Pearson r")
-ax3c.plot(spike_sizes, sp_scores, "s-", color=PALETTE["Spearman"], linewidth=2.2,
-          markersize=7, label="Spearman ρ")
-for sp, pv, sv in zip(spike_sizes, p_scores, sp_scores):
-    ax3c.annotate(f"{pv:.3f}", (sp, pv), textcoords="offset points",
-                  xytext=(-5, 8), fontsize=7, color=PALETTE["Pearson"])
-    ax3c.annotate(f"{sv:.3f}", (sp, sv), textcoords="offset points",
-                  xytext=(-5, -14), fontsize=7, color=PALETTE["Spearman"])
-ax3c.set_xlabel("Outlier spike amplitude (extra counts at one channel)")
-ax3c.set_ylabel("Similarity score")
-ax3c.set_title("Score vs outlier magnitude\nPearson degrades; Spearman is stable")
-ax3c.legend()
-ax3c.grid(alpha=0.3)
-ax3c.set_ylim(
-    min(min(p_scores), min(sp_scores)) - 0.1,
-    max(max(p_scores), max(sp_scores)) + 0.15,
+ax3b.set_title(
+    f"Spiked scatter\n(10 low-power points each raised by +{spike_sizes_3[-1]:,} counts)"
 )
+ax3b.set_xlabel("Calculated model power")
+ax3b.set_ylabel("Observed anode counts")
+ax3b.legend(fontsize=7)
+ax3b.grid(alpha=0.25)
+
+# ── Right: all-metric normalised score vs spike size ─────────────────────────
+_norm_ols = _norm3(_ols_slopes)
+ax3c.plot(spike_sizes_3, _norm_ols, "^--", color="#555",
+          linewidth=1.8, markersize=6, label="OLS slope")
+
+for _mname, _mvals in _m3_scores.items():
+    _nm = _norm3(_mvals)
+    ax3c.plot(spike_sizes_3, _nm, "o-", color=PALETTE[_mname],
+              linewidth=2.0, markersize=6, label=_mname)
+    # Label the final (most degraded) value
+    ax3c.annotate(
+        f"{_nm[-1]:.2f}",
+        (spike_sizes_3[-1], _nm[-1]),
+        textcoords="offset points", xytext=(4, 0),
+        fontsize=7, color=PALETTE[_mname],
+    )
+
+ax3c.set_xlabel("Outlier spike amplitude (extra counts on one of 448 points)")
+ax3c.set_ylabel("Normalised score\n(1.0 = clean baseline  ·  0.0 = most degraded)")
+ax3c.set_title(
+    "Score vs outlier size\n"
+    "Closer to 1.0 at right edge = more robust"
+)
+ax3c.legend(fontsize=7)
+ax3c.grid(alpha=0.3)
+ax3c.set_ylim(-0.15, 1.25)
 
 plt.tight_layout()
 fig3.savefig("metrics_fig3_outlier_robustness.png", dpi=150, bbox_inches="tight")

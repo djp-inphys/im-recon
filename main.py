@@ -30,7 +30,7 @@ class PipelineConfig:
     stride: int = 1
     min_active_phases_for_normalisation: int = 7
     reconstruction_strategy: str = "none"
-    reconstruction_metric: str = "spearman"
+    reconstruction_metric: str = "cosine"
     reconstruction_bin_low: int = 0
     reconstruction_bin_high: int = 600
     reconstruction_output: str | None = None
@@ -48,6 +48,9 @@ class PipelineConfig:
     mask_phase: int | None = None
     anti_mask_phase: int | None = None
     target_image_size: int = 70
+    pixel: int | None = None
+    pixel_anode: int | None = None
+    pixel_output_prefix: str | None = None
 
 
 class ReconstructionPipeline:
@@ -419,6 +422,104 @@ class ReconstructionPipeline:
         with open(file_path, "w", encoding="utf-8"):
             pass
 
+    def run_pixel_visualisation(
+        self,
+        pixel_idx: int,
+        anode: int | None = None,
+        output_prefix: str | None = None,
+    ) -> None:
+        """Generate single-anode and all-anodes diagnostic plots for one pixel.
+
+        Can be called after :meth:`run` so the already-accumulated phase counts
+        are reused — no second data pass is needed.  If the reconstruction
+        strategy does not hold a pre-built model (e.g. ``none`` or
+        ``mask-antimask``) a fresh :class:`Model` is loaded from the configured
+        model file.
+        """
+        from reconstruction import ModelCorrelationStrategy
+        from model import Model as _Model
+        from visualise_pixel import (
+            _logical_channel_map,
+            _phase_energy_sums,
+            _pixel_scatter_data,
+            _single_anode_data,
+            _auto_select_anode,
+            plot_single_anode,
+            plot_all_anodes,
+        )
+
+        # ── get or build the model ────────────────────────────────────────────
+        if (
+            isinstance(self.strategy, ModelCorrelationStrategy)
+            and self.strategy._model is not None
+        ):
+            model = self.strategy._model
+        else:
+            logger.info(
+                "Strategy '%s' does not hold a model; loading from '%s'.",
+                self.strategy.name,
+                self.config.model_filename,
+            )
+            model = _Model(
+                data=self.data,
+                model_fname=self.config.model_filename,
+                e2adc_fname=self.config.e2adc_filename,
+            )
+
+        # ── validate pixel index ──────────────────────────────────────────────
+        if not (0 <= pixel_idx < model.pixel_count):
+            logger.error(
+                "--pixel %d is out of range (valid: 0 – %d); skipping visualisation.",
+                pixel_idx,
+                model.pixel_count - 1,
+            )
+            return
+
+        active_phases = list(self.data.phase_sequence)
+
+        lch_map    = _logical_channel_map(model)
+        phase_sums = _phase_energy_sums(
+            model,
+            active_phases,
+            self.config.reconstruction_bin_low,
+            self.config.reconstruction_bin_high,
+        )
+        model_x, obs_y, _ = _pixel_scatter_data(
+            model, phase_sums, lch_map, pixel_idx, active_phases
+        )
+
+        # ── choose anode ──────────────────────────────────────────────────────
+        if anode is None:
+            anode = _auto_select_anode(
+                model, phase_sums, lch_map, pixel_idx, active_phases
+            )
+            logger.info(
+                "Auto-selected anode %d (strongest positive slope) for pixel %d.",
+                anode,
+                pixel_idx,
+            )
+
+        single_model, single_obs = _single_anode_data(
+            model, phase_sums, lch_map, pixel_idx, active_phases, anode
+        )
+
+        prefix = output_prefix or f"pixel_{pixel_idx}"
+        plot_single_anode(
+            single_model,
+            single_obs,
+            active_phases,
+            anode=anode,
+            pixel_idx=pixel_idx,
+            output_path=f"{prefix}_single_anode.png",
+        )
+        plot_all_anodes(
+            model_x,
+            obs_y,
+            pixel_idx=pixel_idx,
+            n_phases=len(active_phases),
+            output_path=f"{prefix}_all_anodes.png",
+        )
+
 
 def configure_logging(level: str = "INFO") -> None:
     numeric_level = getattr(logging, level.upper(), logging.INFO)
@@ -460,6 +561,9 @@ def build_config_from_args(args: argparse.Namespace) -> PipelineConfig:
         mask_phase=args.mask_phase,
         anti_mask_phase=args.anti_mask_phase,
         target_image_size=args.target_image_size,
+        pixel=args.pixel,
+        pixel_anode=args.anode,
+        pixel_output_prefix=args.pixel_output_prefix,
     )
 
 
@@ -492,14 +596,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--reconstruction-metric",
-        choices=["pearson", "spearman", "poisson", "pearson"],
+        choices=["cosine", "spearman", "poisson", "pearson"],
         default="cosine",
         help=(
             "Figure-of-merit metric for the model correlation strategy. "
-            "'spearman' (default) uses rank correlation for monotone robustness; "
-            "'cosine' measures flux-shape alignment without mean-subtraction; "
+            "'cosine' (default) measures flux-shape alignment without mean-subtraction; "
+            "'spearman' uses rank correlation for monotone robustness and outlier resistance; "
             "'poisson' applies a profile Poisson log-likelihood (statistically optimal for count data); "
-            "'pearson' restores the original linear-correlation behaviour."
+            "'pearson' restores the original linear-correlation behaviour (legacy)."
         ),
     )
     parser.add_argument(
@@ -607,6 +711,38 @@ def parse_args() -> argparse.Namespace:
         help="Width/height of output reconstruction image",
     )
     parser.add_argument(
+        "--pixel",
+        type=int,
+        default=612,
+        metavar="IDX",
+        help=(
+            "If set, generate per-pixel diagnostic plots after the main pipeline "
+            "completes.  IDX is the zero-based index into the model source grid "
+            "(0 to pixel_count−1).  Produces <prefix>_single_anode.png and "
+            "<prefix>_all_anodes.png."
+        ),
+    )
+    parser.add_argument(
+        "--anode",
+        type=int,
+        default=37,
+        metavar="CH",
+        help=(
+            "Logical anode (channel) index for the single-anode diagnostic plot "
+            "(0–63).  Only used when --pixel is set.  Defaults to the anode with "
+            "the strongest positive via-CA slope for the chosen pixel."
+        ),
+    )
+    parser.add_argument(
+        "--pixel-output-prefix",
+        default=None,
+        metavar="PREFIX",
+        help=(
+            "Filename prefix for the pixel diagnostic PNGs.  Defaults to "
+            "'pixel_<IDX>'.  Only used when --pixel is set."
+        ),
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         help="Logging level (DEBUG, INFO, WARNING, ERROR)",
@@ -615,8 +751,16 @@ def parse_args() -> argparse.Namespace:
 
 
 def model_main(config: PipelineConfig | None = None) -> ReconstructionResult | None:
-    pipeline = ReconstructionPipeline(config or PipelineConfig())
-    return pipeline.run()
+    cfg = config or PipelineConfig()
+    pipeline = ReconstructionPipeline(cfg)
+    result = pipeline.run()
+    if cfg.pixel is not None:
+        pipeline.run_pixel_visualisation(
+            pixel_idx=cfg.pixel,
+            anode=cfg.pixel_anode,
+            output_prefix=cfg.pixel_output_prefix,
+        )
+    return result
 
 
 if __name__ == "__main__":
